@@ -358,7 +358,6 @@ global.bruhdash = {
 
       return accumulator;
     } else {
-      console.log(collection);
       var i = 0;
       var keys = Object.keys(collection);
       if (accumulator === undefined) {
