@@ -288,13 +288,32 @@ global.bruhdash = {
 
   // iterates over elements of a collection and invokes iteratee for each element
   // Note: this should work for arrays and objects
-  forEach: function() {
-    
+  forEach: function(collection, iteratee) {
+    if (Array.isArray(collection))
+      for (var i = 0; i < collection.length; i ++)
+        iteratee(collection[i], i, collection);
+      
+    else {
+      var keys = Object.keys(collection);
+      for (var i = 0; i < keys.length; i ++) 
+        iteratee(collection[keys[i]], keys[i], collection);      
+    }
   },
 
   // creates an array of values by running each element in collection thru the iteratee
   // Note: this should work for arrays and objects
-  map: function() {
+  map: function(collection, iteratee) {
+    var res = [];
+    if (Array.isArray(collection)) 
+      for (var i = 0; i < collection.length; i ++)
+        res.push(iteratee(collection[i], i, collection));
+    else {
+      var keys = Object.keys(collection);
+      for (var i = 0; i < keys.length; i ++)
+        res.push(iteratee(collection[keys[i]], keys[i], collection));
+    }
+
+    return res;
   },
 
   /*************************
@@ -303,14 +322,54 @@ global.bruhdash = {
 
   // iterates over elements of a collection and returns all elements that the predicate returns truthy for
   // Note: this should work for arrays and objects
-  filter: function() {
+  filter: function(collection, iteratee) {
+    if (Array.isArray(collection)) {
+      var res = [];
+      for (var i = 0; i < collection.length; i ++)
+        if (iteratee(collection[i], i, collection))
+          res.push(collection[i]);
 
+      return res;
+    } else {
+      var res = {};
+      var keys = Object.keys(collection);
+      for (var i = 0; i < keys.length; i ++) {
+        if (iteratee(collection[keys[i]], keys[i], collection))
+          res[keys[i]] = collection[keys[i]];
+      }
+
+      return res;
+    }
   },
 
   // Reduces the collection to a value which is the accumulated result of running each element
   // in the collection through an iteratee
   // Note: this should work for arrays and objects
-  reduce: function() {
-    
+  reduce: function(collection, iteratee, accumulator) {
+    if (Array.isArray(collection)) {
+      var i = 0;
+      if (accumulator === undefined) {
+        accumulator = collection[i];
+        i ++;
+      }
+      for (; i < collection.length; i ++) {
+        accumulator = iteratee(accumulator, collection[i], i, collection);
+      }
+
+      return accumulator;
+    } else {
+      console.log(collection);
+      var i = 0;
+      var keys = Object.keys(collection);
+      if (accumulator === undefined) {
+        accumulator = collection[keys[i]];
+        i ++;
+      }
+      for (; i < keys.length; i ++) {
+        accumulator = iteratee(accumulator, collection[keys[i]], keys[i], collection);
+      }
+
+      return accumulator;
+    }    
   }
 };
