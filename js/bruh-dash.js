@@ -72,7 +72,7 @@ global.bruhdash = {
   compact: function(arr) {
     for (var i = 0; i < arr.length; i ++) {
       var value = arr[i];
-      if (value === null || value === undefined || value === NaN || value === 0 || value === false || value === '') {
+      if (value === null || value === undefined || (typeof value === 'number' && (!(value > 0) && !(value < 0))) || value === false || value === '') {
         arr.splice(i, 1);
         i --;
       }
@@ -232,29 +232,69 @@ global.bruhdash = {
 
   // creates an array of grouped elements
   zip: function () {
+    var args = [];
+    for (value in arguments) {
+      args.push(arguments[value]);
+    }
 
+    var res = [];
+    for (var i = 0; i < args[0].length; i ++) {
+      res.push([]);
+    }
+
+    for (i = 0; i < args.length; i ++) {
+      for (var j = 0; j < args[0].length; j ++) {
+        res[j].push(args[i][j]);
+      }
+    }
+
+    return res;
   },
 
   // creates an array of grouped elements in their pre-zip configuration
-  unzip: function () {
+  unzip: function (arr) {
+    var res = [];
+    for (var i = 0; i < arr[0].length; i ++)
+      res.push([]);
+        
+    for (i = 0; i < arr[0].length; i ++) 
+      for (j = 0; j < arr.length; j ++) 
+        res[i].push(arr[j][i]);
 
+    return res;
   },
 
   // creates an array of elements into groups of length of specified size
-  chunk: function(){
+  chunk: function(arr, size) {
+    if (size <= 0 || arr.length === 0) 
+      return [];
+    if (size >= arr.length)
+      return [arr];
 
+    var res = [];
+    var numOfArr = Math.ceil(arr.length / size);
+    for (var i = 0; i < numOfArr ; i ++)
+      res.push([]);
+
+    for (var i = 0; i < size * (numOfArr - 1); i ++) {
+      res[Math.floor(i / size)].push(arr[i]);
+    }
+    for (; i < arr.length; i ++)
+      res[numOfArr - 1].push(arr[i]);
+
+    return res;
+    
   },
 
   // iterates over elements of a collection and invokes iteratee for each element
   // Note: this should work for arrays and objects
   forEach: function() {
-
+    
   },
 
   // creates an array of values by running each element in collection thru the iteratee
   // Note: this should work for arrays and objects
   map: function() {
-
   },
 
   /*************************
